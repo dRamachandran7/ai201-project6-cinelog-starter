@@ -22,8 +22,11 @@ I made sure to run the test suite, and it passed all tests.
 
 ## Comment 4 — Default visibility
 **My position:**
+The default visibility of watchlists should indeed be private, instead of public.
 **Reasoning:**
+When a user creates a new watchlist, they may not immediately want to share it. It might be something more personal or secret, and by defaulting to public, that is now shared. In the case they do want to share it, keeping the option open allows for it.
 **Tradeoff acknowledged:**
+If the purpose of this app is to be extremely social and to share watchlists, then having an extra step of changing the visibility can introduce friction. Ultimately, the design decision has to do with the core goal of the app, but defaulting to private is the safer option.
 
 ## Comment 5 — Sort order
 **My position:**
