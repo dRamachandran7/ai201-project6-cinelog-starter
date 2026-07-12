@@ -22,7 +22,7 @@ def view_collection(user_id):
     """
     GET /collection/<user_id>
 
-    Returns all films in a user's collection, sorted newest-first.
+    Returns all films in a user's collection, sorted alphabetically by title.
     """
     films = get_collection(user_id)
     return jsonify(films)

@@ -109,23 +109,25 @@ def test_add_to_collection_nonexistent_film_raises(app, sample_user):
 
 # ── get_collection sort order ────────────────────────────────────────────────
 
-def test_get_collection_returns_newest_first(app, sample_user):
+def test_get_collection_returns_alphabetical_order(app, sample_user):
     """
-    get_collection() should return films sorted by date_added descending
-    (most recently added first).
+    get_collection() should return films sorted alphabetically by title,
+    regardless of the order they were added in.
     """
     with app.app_context():
         from datetime import datetime, timezone, timedelta
         from models import Film, CollectionEntry
 
-        film_a = Film(title="Alien", year=1979, genre="Horror")
-        film_b = Film(title="Blade Runner", year=1982, genre="Sci-Fi")
+        film_a = Film(title="Zodiac", year=2007, genre="Crime")
+        film_b = Film(title="Alien", year=1979, genre="Horror")
         db.session.add_all([film_a, film_b])
         db.session.commit()
 
         earlier = datetime.now(timezone.utc) - timedelta(days=5)
         later = datetime.now(timezone.utc)
 
+        # Zodiac was added first, Alien was added later — if sorting were
+        # still date-based, Alien would come first for the wrong reason.
         entry_a = CollectionEntry(user_id=sample_user, film_id=film_a.id, date_added=earlier)
         entry_b = CollectionEntry(user_id=sample_user, film_id=film_b.id, date_added=later)
         db.session.add_all([entry_a, entry_b])
@@ -134,6 +136,6 @@ def test_get_collection_returns_newest_first(app, sample_user):
         collection = get_collection(sample_user)
         titles = [f["title"] for f in collection]
 
-        # Blade Runner was added later, so it should come first
-        assert titles[0] == "Blade Runner"
-        assert titles[1] == "Alien"
+        # Alien sorts before Zodiac alphabetically, independent of date_added
+        assert titles[0] == "Alien"
+        assert titles[1] == "Zodiac"

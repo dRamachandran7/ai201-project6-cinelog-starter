@@ -87,7 +87,7 @@ def remove_from_collection(user_id, film_id):
 
 def get_collection(user_id):
     """
-    Return all films in a user's collection, sorted by date added (newest first).
+    Return all films in a user's collection, sorted alphabetically by title.
 
     Args:
         user_id (str): UUID of the user.
@@ -99,7 +99,8 @@ def get_collection(user_id):
     entries = (
         CollectionEntry.query
         .filter_by(user_id=user_id)
-        .order_by(CollectionEntry.date_added.desc())
+        .join(Film)
+        .order_by(Film.title.asc())
         .all()
     )
 

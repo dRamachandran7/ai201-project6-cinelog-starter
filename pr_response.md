@@ -30,8 +30,11 @@ If the purpose of this app is to be extremely social and to share watchlists, th
 
 ## Comment 5 — Sort order
 **My position:**
+Watchlists and Collections should both use the Alphabetical sort order.
 **Reasoning:**
+In both cases, a user may want to search for a paticular entry in the set. In that case, looking through the alphabetical positioning of the title is much easier than try to remember when you added it to the watchlist or collection. This option would make for a smoother user experience.
 **Engagement with reviewer's point:**
+While keeping the date added sort does help from a history perspective, I maintain my position that having it be easier to locate an entry takes precedence. I can understand that it might be benificial to see the most recent entry first, since that is the one most likely to be the one the user is searching for, but it is only the better option in that case.
 
 ## Comment 6 — Rebase
 **What conflicted:**
