@@ -38,8 +38,11 @@ While keeping the date added sort does help from a history perspective, I mainta
 
 ## Comment 6 — Rebase
 **What conflicted:**
+There were actually no conflicts when I rebased to origin. It seems like the repo was changed unintentionally by someone else.
 **How I resolved it:**
+Nothing had to be changed since there were no conflicts
 **How I verified no conflict remains:**
+After running the rebase command, I got a message saying it was successfully rebased.
 
 ## PR Description
 <!-- Written at the end — feature overview, design decisions, manual testing steps -->
