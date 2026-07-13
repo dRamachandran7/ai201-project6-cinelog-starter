@@ -3,6 +3,12 @@
 ## AI Usage
 <!-- Fill in at the end — how you used AI tools during this project -->
 
+In this project, I had AI tools help me in a few ways:
+
+- To orient myself, I had it detail me the app structure and important files, as well as the logic behind the services
+
+- I had it test my reasoning for the design choices. In comment 4 specifically, I gave the prompt "Read my argument for comment 4, and act as a reviewer. Point out a counter-argument or tradeoff". I then used that to acknowlege the tradeoff and refine my point.
+
 ## Comment 1 — Rename
 **What I did**
 I simply used Cmd + Shift + H to find all occurences of "save_to_watchlist" in the repo, and replaced it with "add_to_watchlist"
