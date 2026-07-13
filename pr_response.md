@@ -17,7 +17,9 @@ I used the same command to search for any occurences of save_to_watchlist, and f
 
 ## Comment 2 — Deduplication
 **What I did:**
+Added an `AlreadyOnWatchlistError` to `services/watchlist_service.py` and updated `add_to_watchlist` to query for an existing `WatchlistEntry` for the same `user_id`/`film_id` before inserting, raising the error instead of creating a duplicate row. Also wired `AlreadyOnWatchlistError` into the `POST /watchlist/<user_id>/add` route (it wasn't caught there at all before) so a duplicate add returns a 409 instead of a 500.
 **How I verified:**
+Added `test_add_to_watchlist_duplicate_raises` in `tests/test_watchlist.py`, mirroring the existing collection test: it adds the same film twice, asserts the second call raises `AlreadyOnWatchlistError`, and confirms only one `WatchlistEntry` row exists afterward. Full test suite passes (`pytest -q`).
 
 
 ## Comment 3 — Missing test
@@ -44,11 +46,11 @@ While keeping the date added sort does help from a history perspective, I mainta
 
 ## Comment 6 — Rebase
 **What conflicted:**
-There were actually no conflicts when I rebased to origin. It seems like the repo was changed unintentionally by someone else.
+`main` had already migrated `Film.id` from `Integer` to a UUID `String(36)` (commit "refactor: migrate film IDs from integer to UUID") before `feature/watchlist` branched off. Git didn't flag this as a textual merge conflict, but `models.py` on this branch still declared `Film.id` as `db.Integer`, and the `film_id` foreign keys on `CollectionEntry` and `WatchlistEntry` were still `db.Integer` too — a silent regression back to the pre-refactor schema. My original response ("no conflicts") was wrong; I hadn't checked whether the branch's schema still matched main's.
 **How I resolved it:**
-Nothing had to be changed since there were no conflicts
+Changed `Film.id`, `CollectionEntry.film_id`, and `WatchlistEntry.film_id` to `db.String(36)` to match main, removed the stale docstring in `models.py` that incorrectly described the file as the pre-refactor state, and updated the `film_id` type references in `services/watchlist_service.py`'s docstring and `routes/watchlist/watchlist.py`'s request-body comment from `<int>` to `<uuid>`.
 **How I verified no conflict remains:**
-After running the rebase command, I got a message saying it was successfully rebased.
+Diffed `models.py` against `main:models.py` to confirm the `Film`/`CollectionEntry` column types now match exactly, and re-ran the full test suite (`pytest -q`) to confirm nothing broke.
 
 ## PR Description
 <!-- Written at the end — feature overview, design decisions, manual testing steps -->
