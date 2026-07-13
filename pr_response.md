@@ -46,3 +46,62 @@ After running the rebase command, I got a message saying it was successfully reb
 
 ## PR Description
 <!-- Written at the end — feature overview, design decisions, manual testing steps -->
+
+### What this PR does
+
+Adds a watchlist feature to CineLog: users can save films they intend to watch later, separate from their collection of films they've already watched. It introduces a `WatchlistEntry` model, `services/watchlist_service.py` (`add_to_watchlist`, `get_watchlist`), and two endpoints:
+
+- `GET /watchlist/<user_id>` — returns all films on a user's watchlist, sorted alphabetically by title
+- `POST /watchlist/<user_id>/add` — adds a film to a user's watchlist (body: `{ "film_id": <id> }`)
+
+Adding a film that doesn't exist raises `FilmNotFoundError`; adding a film already on the watchlist raises `AlreadyOnWatchlistError` rather than creating a duplicate entry.
+
+### Design decisions
+
+- **Visibility default (Comment 4):** `WatchlistEntry.public` defaults to `False`. A user's list of films they intend to watch is more personal than their collection of films they've watched, so new entries start private and the user can opt in to sharing rather than opt out.
+- **Sort order (Comment 5):** Both `get_watchlist` and `get_collection` sort alphabetically by film title, rather than by date added. This makes it easier to locate a specific entry in a list that can grow large, at the cost of not surfacing the most recently added film first.
+
+### Manual testing steps
+
+1. Install dependencies and start the app:
+   ```bash
+   pip install -r requirements.txt
+   python app.py
+   ```
+2. Create a user and a film to test with (no seed data or creation endpoints exist yet, so this is done directly against the app's database):
+   ```bash
+   python3 -c "
+   from app import create_app, db
+   from models import User, Film
+   app = create_app()
+   with app.app_context():
+       user = User(username='reviewer', email='reviewer@example.com')
+       film = Film(title='Paddington 2', year=2017, genre='Comedy')
+       db.session.add_all([user, film])
+       db.session.commit()
+       print('USER_ID', user.id)
+       print('FILM_ID', film.id)
+   "
+   ```
+3. Confirm the watchlist starts empty:
+   ```bash
+   curl http://localhost:5000/watchlist/<USER_ID>
+   # => []
+   ```
+4. Add the film to the watchlist:
+   ```bash
+   curl -X POST http://localhost:5000/watchlist/<USER_ID>/add \
+     -H "Content-Type: application/json" \
+     -d '{"film_id": <FILM_ID>}'
+   # => 201, entry JSON with "public": false
+   ```
+5. Confirm it now appears in the watchlist, with the film's details attached and `public` set to `false`:
+   ```bash
+   curl http://localhost:5000/watchlist/<USER_ID>
+   # => [{ "title": "Paddington 2", ..., "public": false }]
+   ```
+6. Add a second film with an earlier alphabetical title and confirm it's returned first, verifying the alphabetical sort order.
+
+## git log --oneline
+
+![git log](git_log.png)
